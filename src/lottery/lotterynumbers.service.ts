@@ -12,11 +12,18 @@ export class LotteryNumbersService {
   ) {}
 
   async writeWinningNumbers(createLotteryNumbersDto: CreateLotteryNumbersDto): Promise<LotteryNumbers> {
-    const winningNumbers = new this.lotteryNumbersModel(createLotteryNumbersDto);
+    const winningNumbers = new this.lotteryNumbersModel({winningNumbers: createLotteryNumbersDto});
     return winningNumbers.save();
   }
 
-  async readWinningNumbers(): Promise<LotteryNumbers[]> {
-    return this.lotteryNumbersModel.find().exec();
+  async readWinningNumbers() {
+    const winningNumbers = await this.lotteryNumbersModel.find().exec();
+    return winningNumbers.map(numbers => ({
+      "winning numbers": numbers.winningNumbers,
+    }));
+  }
+
+  async deleteWinningnumbers() {
+    await this.lotteryNumbersModel.deleteOne().exec();
   }
 }

@@ -12,7 +12,6 @@ export class LotteryNumbersController {
     async readWinningNumbers() {
         const winningNumbers = await this.lotterNumbersService.readWinningNumbers();
         return winningNumbers;
-        //return [1,2,3,4,5]
     }
 
     @Post()
@@ -20,11 +19,9 @@ export class LotteryNumbersController {
         @Body("numbers") winningNumbers: CreateLotteryNumbersDto,
     ) {
         //for testing:
-        console.log(winningNumbers)
+        this.lotterNumbersService.deleteWinningnumbers();
 
-        const numbers = await this.lotterNumbersService.writeWinningNumbers(
-            winningNumbers
-        );
+       this.lotterNumbersService.writeWinningNumbers(winningNumbers);
         return winningNumbers;
     }
 
