@@ -10,7 +10,8 @@ import { LotteryNumbersController } from './lotterynumbers.controller';
     DatabaseModule,
     RedisModule.forRoot({
         config: {
-          url: 'redis://localhost:6379'
+          url: 'redis://localhost:6379',
+          cancellation: true,
         },
       }),],
   controllers: [LotteryNumbersController],

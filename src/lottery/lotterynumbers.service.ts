@@ -22,6 +22,10 @@ export class LotteryNumbersService {
     if (await this.redis.llen("winning-numbers") === 0 ) {
       const winningNumbers = await this.lotteryNumbersModel.find().exec();
       await this.redis.rpush("winning-numbers",...winningNumbers[0].winningNumbers);
+      
+      // key expires after 15 sec
+      await this.redis.expire("winning-numbers", 15);
+
       return winningNumbers.map(numbers => ({
         "winning numbers": numbers.winningNumbers,
       }));
