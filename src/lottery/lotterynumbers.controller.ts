@@ -18,7 +18,6 @@ export class LotteryNumbersController {
     async writeWinningNumbers(
         @Body("numbers") winningNumbers: CreateLotteryNumbersDto,
     ) {
-        //for testing:
         this.lotterNumbersService.deleteWinningnumbers();
 
        this.lotterNumbersService.writeWinningNumbers(winningNumbers);

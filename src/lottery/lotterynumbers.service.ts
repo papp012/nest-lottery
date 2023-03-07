@@ -19,24 +19,21 @@ export class LotteryNumbersService {
   }
 
   async readWinningNumbers() {
-    if (await this.redis.get("winning-numbers") === null ) {
-          console.log("from db")
-          const winningNumbers = await this.lotteryNumbersModel.find().exec();
-
-          console.log(winningNumbers[0].winningNumbers);
-          //this.redis.rpush("winning-numbers",...winningNumbers[0].winningNumbers);
-          this.redis.set("winning-numbers", winningNumbers[0].winningNumbers);
-      
-          return winningNumbers.map(numbers => ({
-                "winning numbers": numbers.winningNumbers,
-              }));
-        
-        } 
-        else {
-          console.log("from redis")
-          return await this.redis.get("winning-numbers")
-        }
-  }
+    if (await this.redis.llen("winning-numbers") === 0 ) {
+      const winningNumbers = await this.lotteryNumbersModel.find().exec();
+      await this.redis.rpush("winning-numbers",...winningNumbers[0].winningNumbers);
+      return winningNumbers.map(numbers => ({
+        "winning numbers": numbers.winningNumbers,
+      }));
+    } 
+    else {
+      let numbers: number[] = [];
+      for (let i=0; i<5 ;i++) {
+        numbers.push(await this.redis.lindex("winning-numbers",i));
+      }
+      return numbers;
+      }
+    }
 
   async deleteWinningnumbers() {
     await this.lotteryNumbersModel.deleteOne().exec();
