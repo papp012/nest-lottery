@@ -14,3 +14,11 @@ services:
     image: 'redislabs/redismod'
     ports:
       - '6379:6379'
+
+  testing:
+    container_name: jest
+    image: node
+    working_dir: /code
+    volumes:
+      - .:/code
+    command: ["npm", "test", "--","lotterynumbers.service.spec.ts"]
