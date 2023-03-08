@@ -11,7 +11,6 @@ import { LotteryNumbersController } from './lotterynumbers.controller';
     RedisModule.forRoot({
         config: {
           url: 'redis://localhost:6379',
-          cancellation: true,
         },
       }),],
   controllers: [LotteryNumbersController],

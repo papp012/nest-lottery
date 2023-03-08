@@ -27,14 +27,17 @@ export class LotteryNumbersService {
       // configban beállítani
       await this.redis.expire("winning-numbers", 15);
 
-      return winningNumbers.map(numbers => ({
-        "winning numbers (from mongo)": numbers.winningNumbers,
-      }));
+      return JSON.parse(`{ 
+        "winning numbers": [${winningNumbers[0].winningNumbers}],
+        "source": "mongodb"}`)
+      
+     
     } 
     
-    //formátum!
-    //json field: source (mongo/redis)
-    return `winning numbers (from redis): ${await this.redis.hget("winning-numbers", "numbers")}`;
+    return JSON.parse(`{ 
+      "winning numbers": [${await this.redis.hget("winning-numbers", "numbers")}],
+      "source": "redis"}`)
+  
   }
 
   async deleteWinningnumbers() {
