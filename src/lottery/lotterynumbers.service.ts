@@ -8,8 +8,7 @@ import { InjectRedis,Redis } from "@nestjs-modules/ioredis";
 @Injectable()
 export class LotteryNumbersService {
   constructor(
-    @Inject('LOTTERYNUMBERS_MODEL')
-        private readonly lotteryNumbersModel: Model<LotteryNumbers>,
+    @Inject('LOTTERYNUMBERS_MODEL') private readonly lotteryNumbersModel: Model<LotteryNumbers>,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -19,25 +18,24 @@ export class LotteryNumbersService {
   }
 
   async readWinningNumbers() {
-    if (await this.redis.llen("winning-numbers") === 0 ) {
+    if (await this.redis.hlen("winning-numbers") === 0 ) {
+
       const winningNumbers = await this.lotteryNumbersModel.find().exec();
-      await this.redis.rpush("winning-numbers",...winningNumbers[0].winningNumbers);
+      await this.redis.hset("winning-numbers",{"numbers":winningNumbers[0].winningNumbers});
       
       // key expires after 15 sec
+      // configban beállítani
       await this.redis.expire("winning-numbers", 15);
 
       return winningNumbers.map(numbers => ({
-        "winning numbers": numbers.winningNumbers,
+        "winning numbers (from mongo)": numbers.winningNumbers,
       }));
     } 
-    else {
-      let numbers: number[] = [];
-      for (let i=0; i<5 ;i++) {
-        numbers.push(await this.redis.lindex("winning-numbers",i));
-      }
-      return numbers;
-      }
-    }
+    
+    //formátum!
+    //json field: source (mongo/redis)
+    return `winning numbers (from redis): ${await this.redis.hget("winning-numbers", "numbers")}`;
+  }
 
   async deleteWinningnumbers() {
     await this.lotteryNumbersModel.deleteOne().exec();
